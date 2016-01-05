@@ -12,9 +12,10 @@ Package.onUse(function (api) {
     api.use('mongo');
     api.use('accounts-base');
     api.use('sha');
-    api.use('npm-bcrypt@=0.7.8_2');
+    api.use('npm-bcrypt@=0.7.8_2', 'server');
     api.use('stevezhu:lodash@3.10.1');
     api.use('aldeed:simple-schema@1.5.0', 'server');
+    api.use('jquery', 'client');
 
     // lib
     api.addFiles('lib/VerifyCodes_server.js', 'server');
