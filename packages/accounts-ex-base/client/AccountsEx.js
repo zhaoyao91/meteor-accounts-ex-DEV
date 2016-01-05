@@ -41,7 +41,7 @@ AccountsEx = {
     },
 
     /**
-     * 设置在所有窗口关闭时退出登录
+     * logout when all tabs are closed
      * @param {Boolean} setIt - default true
      */
     logoutOnClose(setIt = true) {
