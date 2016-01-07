@@ -26,6 +26,16 @@ const actions = {
 const oncloseLogoutKey = 'meteor-onclose-logout';
 const openTabCountKey = 'meteor-open-tab-count';
 
+function defaultCallback(err) {
+    if (err) {
+        console.error(err);
+    }
+}
+
+function ensureCallback(callback) {
+    return callback || defaultCallback;
+}
+
 AccountsEx = {
     methodPrefix: prefix,
     publicationPrefix: 'AccountsEx.publications.',
@@ -70,6 +80,9 @@ AccountsEx = {
         };
     },
 
+    defaultCallback: defaultCallback,
+    ensureCallback: ensureCallback,
+
     // config apis
 
     /**
@@ -90,16 +103,6 @@ AccountsEx = {
 
     _actions: actions
 };
-
-function defaultCallback(err) {
-    if (err) {
-        console.error(err);
-    }
-}
-
-function ensureCallback(callback) {
-    return callback || defaultCallback;
-}
 
 // count open tabs
 {
