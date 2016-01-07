@@ -6,6 +6,10 @@ AccountsEx.setActionHooks({
     login: {
         /**
          * login with password and linked email or linked phone
+         * 1. email or phone is linked with some user
+         * 2. email or phone is verified
+         * 3. password is matched
+         *
          * @param [email]
          * @param [phone]
          * @param password
@@ -20,36 +24,33 @@ AccountsEx.setActionHooks({
             return function ({email, phone, password}) {
                 schema.validate({email, phone, password});
 
-                // find linked user
-                let user;
                 if (email) {
-                    if (!AccountsEx.findUserByEmail) {
-                        throw new Meteor.Error(
-                            'cannot-login-with-email',
-                            'accounts-ex-email package is not added, so user cannot login with email');
+                    let user = AccountsEx.findUserByEmail(email);
+                    if (!user) {
+                        throw new Meteor.Error('no-user', 'email is not linked with any user');
                     }
-                    user = AccountsEx.findUserByEmail(email);
+                    let emailIsVerified = _.find(user.emails, {address: email}).verified;
+                    if (!emailIsVerified) {
+                        throw new Meteor.Error('email-not-verified', 'linked email is not verified');
+                    }
+                    AccountsEx.checkPassword(user, password);
+                    return {userId: user._id};
                 }
                 else if (phone) {
-                    if (!AccountsEx.findUserByPhone) {
-                        throw new Meteor.Error(
-                            'cannot-login-with-phone',
-                            'accounts-ex-phone package is not added, so user cannot login with phone');
+                    let user = AccountsEx.findUserByPhone(phone);
+                    if (!user) {
+                        throw new Meteor.Error('no-user', 'phone is not linked with any user');
                     }
-                    user = AccountsEx.findUserByPhone(phone);
+                    let phoneIsVerified = _.find(user.phones, {number: phone}).verified;
+                    if (!phoneIsVerified) {
+                        throw new Meteor.Error('phone-not-verified', 'linked phone is not verified');
+                    }
+                    AccountsEx.checkPassword(user, password);
+                    return {userId: user._id};
                 }
                 else {
                     throw new Meteor.Error('no-email-or-phone', 'you must specify email or phone');
                 }
-
-                if (!user) {
-                    throw new Meteor.Error('no-user', 'no such user');
-                }
-
-                // check password
-                AccountsEx.checkPassword(user, password);
-
-                return {userId: user._id};
             }
         }())
     },
