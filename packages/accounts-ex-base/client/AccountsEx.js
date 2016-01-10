@@ -110,14 +110,14 @@ AccountsEx = {
 
     // record open tabs
     {
-        $(window).on('load', function () {
+        $(window).on('pageshow', function () {
             // add new tab record
             let tabs = getTabs();
             tabs[tabId] = (new Date).getTime();
             setTabs(tabs);
         });
 
-        $(window).on('beforeunload', function () {
+        $(window).on('pagehide', function () {
             // remove tab record
             let tabs = getTabs();
             delete tabs[tabId];
@@ -144,7 +144,7 @@ AccountsEx = {
 
     // logout if should
     {
-        $(window).on('beforeunload', function () {
+        $(window).on('pagehide', function () {
             let tabs = getTabs();
             let count = _.keys(tabs).length;
             let shouldLogout = Boolean(Meteor._localStorage.getItem(oncloseLogoutKey));
