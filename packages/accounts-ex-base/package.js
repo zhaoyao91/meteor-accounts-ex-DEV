@@ -16,6 +16,7 @@ Package.onUse(function (api) {
     api.use('stevezhu:lodash@3.10.1');
     api.use('aldeed:simple-schema@1.5.0', 'server');
     api.use('jquery', 'client');
+    api.use('random', 'client');
 
     // lib
     api.addFiles('lib/VerifyCodes_server.js', 'server');
