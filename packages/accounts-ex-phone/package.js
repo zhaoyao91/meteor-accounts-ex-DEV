@@ -11,7 +11,7 @@ Package.onUse(function (api) {
     api.use('ecmascript');
     api.use('accounts-base');
     api.use('random', 'server');
-    api.use('stevezhu:lodash@3.10.1');
+    api.use('stevezhu:lodash@4.0.0');
     api.use('aldeed:simple-schema@1.5.0', 'server');
     api.use('zhaoyao91:accounts-ex-base@0.0.1');
 
