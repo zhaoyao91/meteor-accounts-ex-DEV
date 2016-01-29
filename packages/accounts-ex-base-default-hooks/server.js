@@ -1,6 +1,6 @@
 const emailDef = {type: String, regEx: SimpleSchema.RegEx.Email};
 const phoneDef = {type: String, regEx: SimpleSchema.RegEx.Phone};
-const passwordDef = {type: String};
+const passwordDef = {type: String, min: 1};
 
 AccountsEx.setActionHooks({
     login: {

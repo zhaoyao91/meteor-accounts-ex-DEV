@@ -1,7 +1,7 @@
 const emailDef = {type: String, regEx: SimpleSchema.RegEx.Email};
 const phoneDef = {type: String, regEx: SimpleSchema.RegEx.Phone};
 const projectDef = {type: String};
-const passwordDef = {type: String};
+const passwordDef = {type: String, min: 1};
 const codeDef = {type: String};
 
 AccountsEx.setActionHooks({
