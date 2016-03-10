@@ -23,8 +23,6 @@ const actions = {
     })
 };
 
-const oncloseLogoutKey = 'meteor-onclose-logout';
-
 function defaultCallback(err) {
     if (err) {
         console.error(err);
@@ -47,23 +45,6 @@ AccountsEx = {
 
     logout(callback) {
         Meteor.logout(ensureCallback(callback));
-    },
-
-    /**
-     * logout when all tabs are closed
-     * @param {Boolean} setIt - default true
-     */
-    logoutOnClose(setIt = true) {
-        if (setIt) {
-            Meteor._localStorage.setItem(oncloseLogoutKey, true);
-        }
-        else {
-            Meteor._localStorage.removeItem(oncloseLogoutKey);
-        }
-    },
-
-    willLogoutOnClose() {
-        return Boolean(Meteor._localStorage.getItem(oncloseLogoutKey))
     },
 
     resetPassword(options, callback) {
@@ -102,76 +83,3 @@ AccountsEx = {
 
     _actions: actions
 };
-
-// config onclose logout
-{
-    const tabId = Random.id();
-    const openTabsKey = 'meteor-open-tabs';
-
-    // record open tabs
-    {
-        $(window).on('pageshow', function () {
-            // add new tab record
-            let tabs = getTabs();
-            tabs[tabId] = (new Date).getTime();
-            setTabs(tabs);
-        });
-
-        $(window).on('pagehide', function () {
-            // remove tab record
-            let tabs = getTabs();
-            delete tabs[tabId];
-            setTabs(tabs);
-        });
-    }
-
-    // fix open tabs records
-    {
-        const interval = 60 * 1000; // beat and fix every minute
-        Meteor.setInterval(()=> {
-            let tabs = getTabs();
-            const now = (new Date).getTime();
-
-            // beat new time
-            tabs[tabId] = now;
-
-            // remove incorrect tabs
-            let newTabs = _.omit(tabs, time=>_.lt(time, now - interval));
-
-            setTabs(newTabs);
-        }, interval)
-    }
-
-    // logout if should
-    {
-        $(window).on('pagehide', function () {
-            let tabs = getTabs();
-            let count = _.keys(tabs).length;
-            let shouldLogout = Boolean(Meteor._localStorage.getItem(oncloseLogoutKey));
-            if (!(count > 0) && shouldLogout) {
-                AccountsEx.logout();
-                Accounts.makeClientLoggedOut();
-            }
-        });
-    }
-
-    function getTabs() {
-        let tabs = Meteor._localStorage.getItem(openTabsKey);
-        if (tabs) {
-            try {
-                tabs = JSON.parse(tabs);
-            }
-            catch (err) {
-                tabs = {};
-            }
-        }
-        else {
-            tabs = {};
-        }
-        return tabs;
-    }
-
-    function setTabs(tabs) {
-        Meteor._localStorage.setItem(openTabsKey, JSON.stringify(tabs));
-    }
-}
